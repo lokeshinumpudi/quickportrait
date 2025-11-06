@@ -56,12 +56,17 @@ test.describe("Preset Management - P0 Flows", () => {
   });
 
   test("should allow editing existing preset", async ({ page }) => {
-    // Find and click edit button on first preset
-    const editButtons = page.getByRole("button", { name: /Edit/i });
-    const firstEditButton = editButtons.first();
+    // Find and click edit button on first preset (use test ID for reliability)
+    // First, wait for presets to load
+    await expect(page.getByText(/All Presets/i)).toBeVisible({
+      timeout: 3000,
+    });
 
-    await expect(firstEditButton).toBeVisible({ timeout: 3000 });
-    await firstEditButton.click();
+    // Find the first preset's edit button using test ID
+    // We'll use Portraitify as it's a built-in preset that should always exist
+    const editButton = page.getByTestId("edit-preset-button-Portraitify");
+    await expect(editButton).toBeVisible({ timeout: 3000 });
+    await editButton.click();
 
     // Editor should open
     await expect(

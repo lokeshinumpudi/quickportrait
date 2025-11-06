@@ -1,9 +1,7 @@
 /**
  * Analytics utilities
- * Tracks events locally and sends to PostHog if configured
+ * Tracks events locally only
  */
-
-import posthog from "posthog-js";
 
 interface AnalyticsEvent {
   event: string;
@@ -31,16 +29,7 @@ export const setAnalyticsEnabled = (enabled: boolean): void => {
 };
 
 /**
- * Check if PostHog is configured
- */
-export const isPostHogConfigured = (): boolean => {
-  return !!import.meta.env.VITE_PUBLIC_POSTHOG_KEY;
-};
-
-/**
- * Track an event
- * - Always stores locally if local analytics is enabled
- * - Always sends to PostHog if configured (no opt-out)
+ * Track an event (stores locally only)
  */
 export const trackEvent = (
   eventName: string,
@@ -69,23 +58,6 @@ export const trackEvent = (
       // Silently fail - analytics should never break the app
       if (import.meta.env.MODE === "development") {
         console.warn("Local analytics tracking failed:", error);
-      }
-    }
-  }
-
-  // Always send to PostHog if configured (mandatory tracking)
-  if (isPostHogConfigured()) {
-    try {
-      if (posthog && typeof posthog.capture === "function") {
-        posthog.capture(eventName, {
-          ...metadata,
-          timestamp: new Date().toISOString(),
-        });
-      }
-    } catch (error) {
-      // Silently fail - PostHog errors shouldn't break the app
-      if (import.meta.env.MODE === "development") {
-        console.debug("PostHog tracking failed:", error);
       }
     }
   }

@@ -759,6 +759,7 @@ const PresetSettings: React.FC<PresetSettingsProps> = ({ initialPresetId }) => {
                                   ? "bg-lime/20 border-lime text-lime hover:bg-lime hover:text-dark-bg"
                                   : "bg-cyan/20 border-cyan text-cyan hover:bg-cyan hover:text-dark-bg"
                               }`}
+                              data-testid={`edit-preset-button-${preset.id}`}
                             >
                               Edit
                             </button>
