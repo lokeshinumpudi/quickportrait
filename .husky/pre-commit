@@ -1,11 +1,1 @@
-#!/usr/bin/env sh
-. "$(dirname -- "$0")/_/husky.sh"
-
-echo "🔍 Running lint-staged (type check on staged files)..."
-bunx lint-staged || {
-  echo "❌ Lint-staged failed. Please fix the errors before committing."
-  exit 1
-}
-
-echo "✅ Pre-commit checks passed!"
-
+bun run lint-staged

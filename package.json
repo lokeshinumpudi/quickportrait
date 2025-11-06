@@ -22,7 +22,15 @@
     "test:install": "playwright install chromium",
     "test:install:all": "playwright install",
     "test:single": "playwright test tests/landing-page.spec.ts",
+    "test:report": "playwright show-report",
+    "lint-staged": "lint-staged",
+    "pre-push:check": "bun run type-check && bun run test",
     "prepare": "husky"
+  },
+  "lint-staged": {
+    "*.{ts,tsx}": [
+      "bun run type-check"
+    ]
   },
   "dependencies": {
     "@google/genai": "^1.27.0",
