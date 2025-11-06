@@ -1,0 +1,322 @@
+---
+alwaysApply: true
+---
+
+# Quick Portrait - Cursor Rules
+
+## Project Overview
+
+Quick Portrait is an AI-powered image editing web application built with React, TypeScript, and Vite. It uses Google's Gemini API for image generation and editing. The app features a retro/cyberpunk aesthetic with glassmorphism effects, dither patterns, and a monospace font.
+
+## Tech Stack
+
+- **Framework**: React 19.2.0 with TypeScript 5.8.2
+- **Build Tool**: Vite 6.2.0
+- **Styling**: Tailwind CSS (via CDN) + Custom CSS Variables
+- **State Management**: React Hooks (useState, useEffect, useCallback)
+- **API Client**: @google/genai (Google Gemini API)
+- **Notifications**: Sonner (toast notifications)
+- **Font**: VT323 (monospace retro font)
+
+## Project Structure
+
+```
+quick-portrait/
+├── components/          # React components
+│   ├── settings/       # Settings-related components
+│   └── *.tsx          # Feature components
+├── services/          # API service layers
+├── utils/             # Utility functions
+├── types.ts           # TypeScript type definitions
+├── constants.ts       # App constants and configuration
+├── App.tsx            # Main application component
+├── index.tsx          # Entry point
+└── index.html         # HTML template with global styles
+```
+
+## Code Style & Conventions
+
+### TypeScript
+
+- Use TypeScript for all components and utilities
+- Define interfaces for component props (e.g., `ComponentNameProps`)
+- Use enums for fixed sets of values (e.g., `Preset` enum)
+- Prefer `React.FC<Props>` for component definitions
+- Use explicit return types for functions when helpful
+
+### Component Patterns
+
+- Use functional components with hooks
+- Export components as default exports
+- Keep components focused and single-purpose
+- Use props interfaces defined above the component
+- Prefer composition over complex prop drilling
+
+Example:
+
+```typescript
+interface ComponentProps {
+  onAction: (value: string) => void;
+  isVisible?: boolean;
+}
+
+const Component: React.FC<ComponentProps> = ({
+  onAction,
+  isVisible = false,
+}) => {
+  // Component implementation
+};
+
+export default Component;
+```
+
+### File Naming
+
+- Components: PascalCase (e.g., `ApiKeyManager.tsx`)
+- Utilities: camelCase (e.g., `apiKeyUtils.ts`)
+- Types: camelCase (e.g., `types.ts`)
+- Constants: camelCase (e.g., `constants.ts`)
+
+### Naming Conventions
+
+- Components: PascalCase
+- Functions: camelCase
+- Constants: UPPER_SNAKE_CASE for constants, camelCase for exports
+- Props interfaces: `ComponentNameProps`
+- Event handlers: `handle` prefix (e.g., `handleClick`, `handleSave`)
+
+## Styling Guidelines
+
+### Design System
+
+- **Primary Colors**:
+  - Cyan: `#00ffff` (var(--cyan))
+  - Lime: `#39ff14` (var(--lime))
+  - Dark BG: `#0d0d0d` (var(--dark-bg))
+- **Font**: VT323 monospace font
+- **Theme**: Retro/cyberpunk aesthetic with glassmorphism
+
+### Tailwind CSS Usage
+
+- Use Tailwind utility classes primarily
+- Prefer Tailwind's responsive breakpoints: `sm:`, `md:`, `lg:`
+- Use custom CSS variables via Tailwind config for colors
+- Custom classes defined in `index.html`:
+  - `.glass` - Glassmorphism effect
+  - `.btn-dither` - Dithered button hover effect
+  - `.custom-checkbox` - Custom checkbox styling
+  - `.scrollbar-hide` - Hide scrollbars
+  - `.animate-fade-in` - Fade-in animation
+
+### Styling Patterns
+
+- Use `glass` class for panels and modals
+- Use `btn-dither` for interactive buttons
+- Text colors: `text-cyan`, `text-cyan/70`, `text-lime`
+- Borders: `border-cyan/30`, `border-cyan/50`
+- Shadows: `shadow-glow-cyan`, `shadow-glow-lime`
+- Uppercase text for headings: `uppercase`
+- Monospace font via `font-mono` class
+
+### Responsive Design
+
+- Mobile-first approach
+- Use Tailwind breakpoints: `md:` for tablets, `lg:` for desktop
+- Ensure touch-friendly button sizes on mobile
+- Horizontal scrolling tabs on mobile, vertical sidebar on desktop
+
+## Component Organization
+
+### Component Structure
+
+1. Imports (React, types, utilities)
+2. Interface definitions
+3. Component definition
+4. Internal state/hooks
+5. Event handlers
+6. Render JSX
+7. Default export
+
+### State Management
+
+- Use `useState` for local component state
+- Use `useEffect` for side effects and data fetching
+- Use `useCallback` for memoized event handlers passed as props
+- Store API keys in localStorage via utility functions
+- Keep global state in App.tsx and pass down via props
+
+### Error Handling
+
+- Use `try-catch` blocks for async operations
+- Use utility functions from `utils/errorUtils.ts` for API error handling
+- Display errors via toast notifications (`showError`, `showSuccess` from `utils/toast.ts`)
+- Check for API key errors specifically and redirect to settings
+
+### API Integration
+
+- All API calls go through `services/geminiService.ts`
+- Use `editImageWithGemini` for image editing
+- Use `enhancePromptWithGemini` for prompt enhancement
+- Handle API key errors gracefully with user-friendly messages
+- API keys stored in localStorage, never sent to backend
+
+## Modal & Settings Patterns
+
+### Modal Component
+
+- Use `Modal` component for simple popups
+- Use `SettingsModal` for tabbed settings interfaces
+- Modal sizes: `default`, `large`, `xlarge`
+- Modals should:
+  - Close on backdrop click
+  - Close on Escape key
+  - Prevent body scroll when open
+  - Include fade-in animations
+
+### Settings Modal
+
+- Use tabbed interface with side navigation
+- Tabs defined in parent component (App.tsx)
+- Each tab renders different settings component
+- Tab structure:
+  - Sidebar tabs (vertical on desktop, horizontal on mobile)
+  - Content area (renders based on active tab)
+  - Smooth transitions between tabs
+
+## UI/UX Patterns
+
+### User Feedback
+
+- Use toast notifications for success/error messages
+- Toast styles match app aesthetic (cyan/lime borders, dark background)
+- Show loading states during async operations
+- Disable buttons during operations to prevent double-submission
+
+### Image Handling
+
+- Convert files to base64 for API calls
+- Convert data URLs back to File objects for re-uploading
+- Use `URL.createObjectURL` for image previews
+- Clean up object URLs to prevent memory leaks
+
+### Accessibility
+
+- Include `aria-label` attributes on icon buttons
+- Use semantic HTML elements
+- Ensure keyboard navigation works (Enter key, Escape key)
+- Provide visual feedback for all interactive elements
+
+## Code Quality Guidelines
+
+### Performance
+
+- Use `useCallback` for event handlers passed to child components
+- Avoid unnecessary re-renders
+- Clean up effects (remove event listeners, clear timeouts)
+- Use React.memo sparingly (only when profiling shows benefit)
+
+### Code Organization
+
+- Keep components under 300 lines when possible
+- Split large components into smaller, focused components
+- Extract reusable logic into custom hooks or utilities
+- Group related functionality in separate files
+
+### Error Boundaries
+
+- Handle errors gracefully at component level
+- Provide user-friendly error messages
+- Log errors to console for debugging
+- Redirect to appropriate UI state on errors
+
+## Constants & Configuration
+
+### Constants File (`constants.ts`)
+
+- Store preset options and descriptions
+- Store prompt templates with placeholders
+- Use enums for type-safe constants
+- Export descriptive constant names
+
+### Types File (`types.ts`)
+
+- Define enums for fixed value sets
+- Export shared type definitions
+- Keep types focused and reusable
+
+## Development Workflow
+
+### Adding New Features
+
+1. Create component in appropriate directory
+2. Define TypeScript interfaces for props
+3. Follow existing styling patterns
+4. Add to App.tsx if needed
+5. Test responsive behavior
+6. Ensure error handling is in place
+
+### Adding Settings
+
+1. Add new tab type to `SettingsTab` in `SettingsModal.tsx`
+2. Create settings component in `components/settings/`
+3. Add tab config to `settingsTabs` array in App.tsx
+4. Add case in `renderSettingsContent` function
+5. Follow existing settings component patterns
+
+### Testing Considerations
+
+- Test with and without API key
+- Test responsive layouts (mobile, tablet, desktop)
+- Test error scenarios (invalid API key, network errors)
+- Test image upload/download flows
+- Verify toast notifications appear correctly
+
+## Best Practices
+
+### Do's
+
+- ✅ Use TypeScript interfaces for all props
+- ✅ Follow the retro/cyberpunk aesthetic consistently
+- ✅ Use toast notifications for user feedback
+- ✅ Handle API key errors gracefully
+- ✅ Make components responsive
+- ✅ Use semantic HTML
+- ✅ Clean up side effects in useEffect
+- ✅ Use descriptive variable and function names
+- ✅ Keep components focused and small
+
+### Don'ts
+
+- ❌ Don't hardcode API keys in code
+- ❌ Don't skip error handling
+- ❌ Don't create components over 300 lines without splitting
+- ❌ Don't bypass TypeScript types
+- ❌ Don't use inline styles (use Tailwind classes)
+- ❌ Don't forget to clean up event listeners
+- ❌ Don't skip responsive design considerations
+- ❌ Don't use generic error messages
+
+## API Key Management
+
+- API keys stored in localStorage (browser-only)
+- Never send API keys to backend
+- Check for API key existence before API calls
+- Show helpful messages when API key is missing
+- Allow users to explore app without API key (demo mode)
+- Provide clear instructions for obtaining API key
+
+## Dependencies
+
+- React 19.2.0 - UI framework
+- @google/genai 1.27.0 - Gemini API client
+- sonner 2.0.7 - Toast notifications
+- Tailwind CSS (CDN) - Utility-first CSS
+- VT323 font - Retro monospace font
+
+## Notes
+
+- The app uses a demo mode where users can explore features without an API key
+- Settings modal uses a tabbed interface for extensibility
+- All styling follows a consistent retro/cyberpunk theme
+- Error handling is centralized in utility functions
+- Toast notifications match the app's visual aesthetic

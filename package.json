@@ -1,0 +1,43 @@
+{
+  "name": "quick-portrait",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "bunx vite",
+    "build": "vite build",
+    "build:analyze": "vite build --mode production",
+    "build:clean": "rm -rf dist && vite build",
+    "preview": "vite preview",
+    "type-check": "tsc --noEmit",
+    "lint": "tsc --noEmit",
+    "clean": "rm -rf dist",
+    "test": "playwright test",
+    "test:list": "playwright test --list",
+    "test:ui": "playwright test --ui",
+    "test:headed": "playwright test --headed",
+    "test:debug": "playwright test --debug",
+    "test:manual": "playwright test --config=playwright.config.manual.ts",
+    "test:ui:manual": "playwright test --ui --config=playwright.config.manual.ts",
+    "test:install": "playwright install chromium",
+    "test:install:all": "playwright install",
+    "test:single": "playwright test tests/landing-page.spec.ts",
+    "prepare": "husky"
+  },
+  "dependencies": {
+    "@google/genai": "^1.27.0",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "sonner": "^2.0.7"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.56.1",
+    "@types/node": "^22.14.0",
+    "@vitejs/plugin-react": "^5.0.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.2.6",
+    "playwright": "^1.56.1",
+    "typescript": "~5.8.2",
+    "vite": "^6.2.0"
+  }
+}
