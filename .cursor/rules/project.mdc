@@ -30,8 +30,10 @@ quick-portrait/
 │   └── *.tsx          # Feature components
 ├── services/          # API service layers
 ├── utils/             # Utility functions
+├── tests/             # Playwright E2E tests
+│   └── helpers.ts     # Test helper functions
 ├── types.ts           # TypeScript type definitions
-├── constants.ts       # App constants and configuration
+├── constants.ts        # App constants and configuration
 ├── App.tsx            # Main application component
 ├── index.tsx          # Entry point
 └── index.html         # HTML template with global styles
@@ -54,6 +56,7 @@ quick-portrait/
 - Keep components focused and single-purpose
 - Use props interfaces defined above the component
 - Prefer composition over complex prop drilling
+- **Always add `data-testid` attributes to interactive elements** (see Testing section)
 
 Example:
 
@@ -67,7 +70,14 @@ const Component: React.FC<ComponentProps> = ({
   onAction,
   isVisible = false,
 }) => {
-  // Component implementation
+  return (
+    <button
+      onClick={() => onAction("test")}
+      data-testid="component-action-button"
+    >
+      Click me
+    </button>
+  );
 };
 
 export default Component;
@@ -274,6 +284,66 @@ export default Component;
 - Test image upload/download flows
 - Verify toast notifications appear correctly
 
+## Testing with Playwright
+
+### Test Structure
+
+- All tests in `tests/` directory
+- Use `test.describe()` to group related tests
+- Use `test.beforeEach()` for common setup
+- Import helpers from `tests/helpers.ts` for reusable setup
+
+### Test IDs (Required)
+
+**ALWAYS add `data-testid` attributes to interactive elements for testing:**
+
+- **Buttons**: `data-testid="button-name"` (e.g., `settings-button`, `generate-edit-button`)
+- **Inputs**: `data-testid="input-name"` (e.g., `api-key-input`, `prompt-textarea`)
+- **Modals**: `data-testid="modal-name"` (e.g., `settings-modal`)
+- **Tabs**: `data-testid="tab-name"` (e.g., `settings-tab-api-key`)
+- **Presets**: `data-testid="preset-button-{presetId}"` (e.g., `preset-button-Portraitify`)
+- **Loading States**: `data-testid="loading-state"`
+
+### Test ID Naming Convention
+
+- Use kebab-case: `settings-button`, `api-key-input`
+- Be descriptive: `generate-edit-button` not `gen-btn`
+- For dynamic IDs, use template: `preset-button-${presetId}`, `settings-tab-${tabId}`
+
+### Test Helpers
+
+- `uploadTestImage(page)`: Uploads test image and waits for editing view
+- `setupEditingView(page)`: Full setup - navigates to `/`, uploads image, ensures Header is visible
+
+### Test Patterns
+
+```typescript
+// Use test IDs in tests
+await page.getByTestId("settings-button").click();
+await expect(page.getByTestId("settings-modal")).toBeVisible();
+
+// For preset buttons
+await page.getByTestId("preset-button-Portraitify").click();
+
+// For settings tabs
+await page.getByTestId("settings-tab-api-key").click();
+```
+
+### Running Tests
+
+- `bun run test` - Run all tests
+- `bun run test:manual` - Run with manually started dev server
+- `bun run test:ui` - Run with Playwright UI
+- `bun run test:report` - View HTML test report
+
+### Test Coverage
+
+- Landing page flows (without image upload)
+- Navigation flows (with image upload)
+- Settings management (API key, presets, general)
+- Preset selection and editing
+- API integration (generate button, error handling)
+
 ## Best Practices
 
 ### Do's
@@ -287,6 +357,9 @@ export default Component;
 - ✅ Clean up side effects in useEffect
 - ✅ Use descriptive variable and function names
 - ✅ Keep components focused and small
+- ✅ **Add `data-testid` attributes to all interactive elements**
+- ✅ Use test helpers (`setupEditingView`, `uploadTestImage`) in tests
+- ✅ Configure git hooks in `package.json` (not separate config files)
 
 ### Don'ts
 
@@ -308,6 +381,32 @@ export default Component;
 - Allow users to explore app without API key (demo mode)
 - Provide clear instructions for obtaining API key
 
+## Git Hooks & Code Quality
+
+### Husky Configuration
+
+- **Pre-commit**: Runs `lint-staged` to type-check staged TypeScript files
+- **Pre-push**: Runs full type check + all tests before allowing push
+- Configuration in `package.json`:
+  - `lint-staged` config for staged file checks
+  - `lint-staged` script runs lint-staged
+  - `pre-push:check` script runs type-check + tests
+
+### Hook Files
+
+- `.husky/pre-commit` - Calls `bun run lint-staged`
+- `.husky/pre-push` - Calls `bun run pre-push:check`
+- Minimal hook files (1-2 lines each)
+- All logic in `package.json` scripts
+
+### File Size Limits
+
+- Default max file size: 10MB (configurable in settings)
+- User-configurable: 1MB - 100MB range
+- Stored in localStorage: `max_file_size_mb`
+- Validation in `utils/fileSizeUtils.ts`
+- Displayed in ImageUploader component
+
 ## Dependencies
 
 - React 19.2.0 - UI framework
@@ -315,6 +414,9 @@ export default Component;
 - sonner 2.0.7 - Toast notifications
 - Tailwind CSS (CDN) - Utility-first CSS
 - VT323 font - Retro monospace font
+- Playwright 1.56.1 - E2E testing
+- Husky 9.1.7 - Git hooks
+- lint-staged 16.2.6 - Staged file linting
 
 ## Notes
 
@@ -323,3 +425,6 @@ export default Component;
 - All styling follows a consistent retro/cyberpunk theme
 - Error handling is centralized in utility functions
 - Toast notifications match the app's visual aesthetic
+- All tests use test IDs for reliable element selection
+- Git hooks ensure code quality before commits/pushes
+- File size limits are user-configurable (default 10MB)
