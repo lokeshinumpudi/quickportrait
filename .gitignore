@@ -32,3 +32,5 @@ playwright/.cache/
 .husky/_/
 
 
+
+.env

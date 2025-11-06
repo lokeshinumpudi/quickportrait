@@ -3,24 +3,13 @@ import { isInvalidApiKeyError, getErrorMessage } from "../utils/errorUtils";
 import { getApiKey as getStoredApiKey } from "../utils/apiKeyUtils";
 
 const getApiKey = (): string => {
-  // First try to get from environment (for development/deployment with server-side key)
-  // Check if env vars are actually set and not empty strings
-  const envApiKey = process.env.API_KEY || process.env.GEMINI_API_KEY;
-  if (envApiKey && envApiKey.trim() !== "") {
-    console.log("[Gemini Service] Using API key from environment variables");
-    return envApiKey;
-  }
-
-  // Fall back to localStorage (for user-provided keys)
+  // Get API key from localStorage (user-provided keys only)
   const storedKey = getStoredApiKey();
   if (storedKey && storedKey.trim() !== "") {
-    console.log("[Gemini Service] Using API key from localStorage");
     return storedKey;
   }
 
-  console.error(
-    "[Gemini Service] No API key found in environment or localStorage"
-  );
+  console.error("[Gemini Service] No API key found in localStorage");
   throw new Error(
     "API key not found. Please configure your Gemini API key in the settings."
   );

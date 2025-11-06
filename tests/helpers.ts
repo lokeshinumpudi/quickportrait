@@ -27,6 +27,29 @@ export async function uploadTestImage(page: Page): Promise<void> {
  * Use this in beforeEach hooks for tests that need editing view access
  */
 export async function setupEditingView(page: Page): Promise<void> {
+  // Mark onboarding as completed to prevent modal from appearing
+  await page.addInitScript(() => {
+    localStorage.setItem("qp_onboarding_completed", "true");
+  });
+
   await page.goto("/");
+
+  // Upload test image
   await uploadTestImage(page);
+
+  // Ensure onboarding is dismissed if it somehow appears
+  const onboardingModal = page.locator('[data-testid="onboarding-modal"]');
+  const isOnboardingVisible = await onboardingModal
+    .isVisible()
+    .catch(() => false);
+  if (isOnboardingVisible) {
+    // Try to close onboarding by clicking close button
+    const closeButton = page
+      .getByRole("button", { name: /close onboarding/i })
+      .first();
+    if (await closeButton.isVisible().catch(() => false)) {
+      await closeButton.click();
+      await page.waitForTimeout(500);
+    }
+  }
 }

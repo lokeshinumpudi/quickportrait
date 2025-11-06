@@ -98,22 +98,23 @@ const EditingPanel: React.FC<EditingPanelProps> = ({
   };
 
   return (
-    <div className="glass p-6 space-y-6">
+    <div className="glass p-4 space-y-4">
+      {/* Preset Selection - Compact */}
       <div>
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-2xl font-bold text-cyan uppercase">
+        <div className="flex items-center justify-between mb-2">
+          <h2 className="text-lg font-bold text-cyan uppercase">
             Choose Preset
           </h2>
           {onOpenPresetSettings && (
             <button
               onClick={onOpenPresetSettings}
-              className="flex items-center gap-2 bg-lime/20 border border-lime/50 text-lime hover:bg-lime hover:text-dark-bg font-bold py-2 px-3 uppercase text-xs transition duration-200 active:scale-[0.98] btn-dither"
+              className="flex items-center gap-1.5 bg-lime/20 border border-lime/50 text-lime hover:bg-lime hover:text-dark-bg font-bold py-1.5 px-2.5 uppercase text-xs transition duration-200 active:scale-[0.98] btn-dither"
               title="Manage presets"
               aria-label="Open preset settings"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                className="h-4 w-4"
+                className="h-3.5 w-3.5"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -133,14 +134,14 @@ const EditingPanel: React.FC<EditingPanelProps> = ({
           {showLeftArrow && (
             <button
               onClick={() => scroll("left")}
-              className="absolute -left-4 z-10 p-2 bg-dark-bg/80 border-2 border-cyan text-cyan hover:bg-cyan hover:text-dark-bg text-2xl active:scale-90 transition-transform"
+              className="absolute -left-3 z-10 p-1.5 bg-dark-bg/90 border border-cyan text-cyan hover:bg-cyan hover:text-dark-bg text-xl active:scale-90 transition-transform"
             >
               {"<"}
             </button>
           )}
           <div
             ref={scrollContainerRef}
-            className="flex items-center space-x-2 pb-2 overflow-x-auto scrollbar-hide"
+            className="flex items-center space-x-2 pb-1 overflow-x-auto scrollbar-hide"
           >
             {availablePresets.map((preset) => (
               <button
@@ -148,7 +149,7 @@ const EditingPanel: React.FC<EditingPanelProps> = ({
                 onClick={() => onPresetChange(preset.id)}
                 onMouseEnter={() => setHoveredPresetId(preset.id)}
                 onMouseLeave={() => setHoveredPresetId(null)}
-                className={`px-4 py-2 text-lg font-bold uppercase whitespace-nowrap transition-all duration-200 ease-in-out flex-shrink-0 border-2 btn-dither ${
+                className={`px-3 py-1.5 text-sm font-bold uppercase whitespace-nowrap transition-all duration-200 ease-in-out flex-shrink-0 border-2 btn-dither ${
                   selectedPresetId === preset.id
                     ? preset.isCustom
                       ? "bg-lime text-dark-bg border-lime shadow-glow-lime"
@@ -161,7 +162,7 @@ const EditingPanel: React.FC<EditingPanelProps> = ({
               >
                 {preset.name}
                 {preset.isCustom && (
-                  <span className="ml-2 text-xs opacity-70">*</span>
+                  <span className="ml-1.5 text-xs opacity-70">*</span>
                 )}
               </button>
             ))}
@@ -169,13 +170,13 @@ const EditingPanel: React.FC<EditingPanelProps> = ({
           {showRightArrow && (
             <button
               onClick={() => scroll("right")}
-              className="absolute -right-4 z-10 p-2 bg-dark-bg/80 border-2 border-cyan text-cyan hover:bg-cyan hover:text-dark-bg text-2xl active:scale-90 transition-transform"
+              className="absolute -right-3 z-10 p-1.5 bg-dark-bg/90 border border-cyan text-cyan hover:bg-cyan hover:text-dark-bg text-xl active:scale-90 transition-transform"
             >
               {">"}
             </button>
           )}
         </div>
-        <div className="h-6 mt-2 px-2 text-lg text-lime/80 transition-opacity duration-200">
+        <div className="h-5 mt-1.5 px-1 text-sm text-lime/80 transition-opacity duration-200">
           {hoveredPresetId
             ? getPresetDescription(hoveredPresetId) ||
               availablePresets.find((p) => p.id === hoveredPresetId)
@@ -186,14 +187,14 @@ const EditingPanel: React.FC<EditingPanelProps> = ({
       </div>
 
       {showColorPicker && (
-        <div className="flex items-center space-x-4 pt-2">
+        <div className="flex items-center space-x-3 pt-1">
           <label
             htmlFor="colorPicker"
-            className="text-cyan font-bold text-lg uppercase"
+            className="text-cyan font-bold text-sm uppercase"
           >
             Color:
           </label>
-          <div className="relative w-12 h-12 border-2 border-cyan/50 p-1">
+          <div className="relative w-10 h-10 border-2 border-cyan/50 p-0.5">
             <input
               id="colorPicker"
               type="color"
@@ -207,21 +208,22 @@ const EditingPanel: React.FC<EditingPanelProps> = ({
               style={{ backgroundColor: customColor }}
             ></div>
           </div>
-          <span className="p-2 bg-dark-bg border-2 border-cyan/30 text-lg">
+          <span className="px-2 py-1 bg-dark-bg border border-cyan/30 text-sm font-mono">
             {customColor}
           </span>
         </div>
       )}
 
+      {/* Prompt Section - Compact */}
       <div>
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-2xl font-bold text-cyan uppercase">
+        <div className="flex justify-between items-center mb-2">
+          <h2 className="text-lg font-bold text-cyan uppercase">
             Edit Prompt
           </h2>
           <button
             onClick={handleEnhanceClick}
             disabled={isEnhancing}
-            className="flex items-center space-x-2 bg-lime/20 border border-lime text-lime hover:bg-lime hover:text-dark-bg font-bold py-2 px-3 uppercase text-sm transition duration-200 active:scale-[0.98] btn-dither disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex items-center space-x-1.5 bg-lime/20 border border-lime text-lime hover:bg-lime hover:text-dark-bg font-bold py-1.5 px-2.5 uppercase text-xs transition duration-200 active:scale-[0.98] btn-dither disabled:opacity-50 disabled:cursor-not-allowed"
             title="Enhance prompt with AI"
             data-testid="enhance-prompt-button"
           >
@@ -229,15 +231,15 @@ const EditingPanel: React.FC<EditingPanelProps> = ({
               <div
                 className="loader"
                 style={{
-                  width: 16,
-                  height: 16,
+                  width: 14,
+                  height: 14,
                   border: "2px solid var(--lime)",
                 }}
               ></div>
             ) : (
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                className="h-5 w-5"
+                className="h-4 w-4"
                 viewBox="0 0 20 20"
                 fill="currentColor"
               >
@@ -250,8 +252,8 @@ const EditingPanel: React.FC<EditingPanelProps> = ({
         <textarea
           value={promptText}
           onChange={(e) => onPromptChange(e.target.value)}
-          rows={4}
-          className="w-full p-3 bg-dark-bg border-2 border-cyan/50 text-cyan placeholder:text-cyan/40 text-lg focus:outline-none focus:border-cyan focus:shadow-glow-cyan resize-none"
+          rows={3}
+          className="w-full p-2.5 bg-dark-bg border-2 border-cyan/50 text-cyan placeholder:text-cyan/40 text-sm focus:outline-none focus:border-cyan focus:shadow-glow-cyan resize-none"
           style={{ backgroundColor: "var(--dark-bg)", color: "var(--cyan)" }}
           placeholder="Describe your edit..."
           aria-label="Edit the prompt for the AI model"
