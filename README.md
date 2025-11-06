@@ -171,3 +171,6 @@ The app is built with:
 ## License
 
 MIT
+// Git hooks configured in package.json
+
+Git hooks configured in package.json
