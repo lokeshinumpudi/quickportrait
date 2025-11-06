@@ -1,2 +1,4 @@
-bun run pre-push:check
+# Ensure bun is in PATH
+export PATH="$HOME/.bun/bin:$PATH"
 
+bun run pre-push:check
