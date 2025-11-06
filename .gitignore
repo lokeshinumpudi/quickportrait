@@ -28,3 +28,7 @@ playwright-report/
 test-results/
 playwright/.cache/
 
+# Husky internal files (hooks are still tracked)
+.husky/_/
+
+

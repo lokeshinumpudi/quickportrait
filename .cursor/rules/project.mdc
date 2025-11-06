@@ -17,6 +17,9 @@ Quick Portrait is an AI-powered image editing web application built with React, 
 - **API Client**: @google/genai (Google Gemini API)
 - **Notifications**: Sonner (toast notifications)
 - **Font**: VT323 (monospace retro font)
+- **Testing**: Playwright 1.56.1
+- **Git Hooks**: Husky 9.1.7 + lint-staged 16.2.6
+- **Package Manager**: Bun
 
 ## Project Structure
 
