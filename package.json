@@ -1,5 +1,9 @@
 {
   "name": "quick-portrait",
+  "author": {
+    "name": "Lokesh Inumpudi",
+    "url": "lokeshinumpudi.com"
+  },
   "private": true,
   "version": "0.0.0",
   "type": "module",
