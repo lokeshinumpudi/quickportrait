@@ -60,8 +60,6 @@
       content="https://storage.googleapis.com/quick-portrait-images/Screenshot%202025-10-24%20at%203.15.44%E2%80%AFPM.png"
     />
 
-    <script src="https://cdn.tailwindcss.com"></script>
-
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -331,26 +329,6 @@
       }
     </style>
 
-    <script>
-      tailwind.config = {
-        theme: {
-          extend: {
-            fontFamily: {
-              mono: ["VT323", "monospace"],
-            },
-            colors: {
-              cyan: "var(--cyan)",
-              lime: "var(--lime)",
-              "dark-bg": "var(--dark-bg)",
-            },
-            boxShadow: {
-              "glow-cyan": "0 0 15px 0px rgba(0, 255, 255, 0.7)",
-              "glow-lime": "0 0 15px 0px rgba(57, 255, 20, 0.7)",
-            },
-          },
-        },
-      };
-    </script>
     <script type="importmap">
       {
         "imports": {
@@ -375,7 +353,6 @@
       }
     </script>
 
-    <link rel="stylesheet" href="/index.css" />
   </head>
   <body class="bg-dark-bg text-cyan">
     <div id="root"></div>

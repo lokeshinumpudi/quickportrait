@@ -3,6 +3,25 @@ import ReactDOM from "react-dom/client";
 import { Toaster } from "sonner";
 import App from "./App";
 import { PostHogProvider } from "posthog-js/react";
+import "./src/index.css";
+
+// Suppress PostHog network errors from ad blockers
+if (typeof window !== "undefined") {
+  const originalError = console.error;
+  console.error = (...args: unknown[]) => {
+    // Filter out PostHog blocked request errors
+    const errorMessage = args.join(" ");
+    if (
+      errorMessage.includes("posthog.com") ||
+      errorMessage.includes("ERR_BLOCKED_BY_CLIENT") ||
+      errorMessage.includes("net::ERR_BLOCKED_BY_CLIENT")
+    ) {
+      // Silently ignore PostHog blocked requests
+      return;
+    }
+    originalError.apply(console, args);
+  };
+}
 
 const rootElement = document.getElementById("root");
 if (!rootElement) {
@@ -18,14 +37,7 @@ root.render(
         api_host:
           import.meta.env.VITE_PUBLIC_POSTHOG_HOST || "https://app.posthog.com",
         defaults: "2025-05-24",
-        // Disable features that cause issues with ad blockers
-        capture_exceptions: false, // Disable exception autocapture to avoid blocked script errors
-        autocapture: false, // Disable automatic event capture
-        capture_pageview: false, // We'll manually track pageviews if needed
-        capture_pageleave: false, // Disable page leave tracking
-        disable_session_recording: true, // Disable session recording
-        disable_persistence: false, // Keep persistence for user preferences
-        disable_surveys: true, // Disable surveys
+
         loaded: (posthog) => {
           // Only log in development
           if (import.meta.env.MODE === "development") {

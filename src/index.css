@@ -1,0 +1,294 @@
+@import "tailwindcss";
+
+@theme {
+  --font-family-mono: "VT323", monospace;
+  
+  --color-cyan: #00ffff;
+  --color-lime: #39ff14;
+  --color-dark-bg: #0d0d0d;
+  
+  --shadow-glow-cyan: 0 0 15px 0px rgba(0, 255, 255, 0.7);
+  --shadow-glow-lime: 0 0 15px 0px rgba(57, 255, 20, 0.7);
+}
+
+:root {
+  --cyan: #00ffff;
+  --lime: #39ff14;
+  --dark-bg: #0d0d0d;
+  --panel-bg: rgba(20, 20, 20, 0.5);
+  --font-family-mono: "VT323", monospace;
+  --dither-bg: radial-gradient(
+      circle at 1px 1px,
+      rgba(255, 255, 255, 0.05) 1px,
+      transparent 0
+    ),
+    radial-gradient(
+      circle at 4px 4px,
+      rgba(255, 255, 255, 0.05) 1px,
+      transparent 0
+    );
+  --dither-bg-size: 5px 5px;
+}
+
+body {
+  background-color: var(--dark-bg);
+  background-image: var(--dither-bg);
+  background-size: var(--dither-bg-size);
+  font-family: var(--font-family-mono);
+  color: var(--cyan);
+}
+
+/* Custom glassmorphism effect */
+.glass {
+  background-color: var(--panel-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(0, 255, 255, 0.2);
+}
+
+/* Custom dithered hover effect for buttons */
+.btn-dither:hover {
+  background-image: radial-gradient(
+      circle at 1px 1px,
+      rgba(0, 0, 0, 0.2) 1px,
+      transparent 0
+    ),
+    radial-gradient(
+      circle at 3px 3px,
+      rgba(0, 0, 0, 0.2) 1px,
+      transparent 0
+    );
+  background-size: 4px 4px;
+}
+
+/* Custom checkbox */
+.custom-checkbox {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 24px;
+  height: 24px;
+  border: 2px solid var(--cyan);
+  background-color: transparent;
+  position: relative;
+  cursor: pointer;
+  outline: none;
+  flex-shrink: 0;
+}
+
+.custom-checkbox:checked {
+  background-color: var(--cyan);
+  box-shadow: 0 0 10px var(--cyan);
+}
+
+.custom-checkbox:checked::after {
+  content: "X";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: var(--dark-bg);
+  font-size: 20px;
+  line-height: 1;
+}
+
+/* Custom loader */
+.loader {
+  width: 48px;
+  height: 48px;
+  display: inline-block;
+  position: relative;
+}
+
+.loader::after,
+.loader::before {
+  content: "";
+  box-sizing: border-box;
+  width: 48px;
+  height: 48px;
+  border: 4px solid var(--cyan);
+  position: absolute;
+  left: 0;
+  top: 0;
+  animation: loader-anim 2s linear infinite;
+}
+
+.loader::after {
+  animation-delay: -1s;
+}
+
+@keyframes loader-anim {
+  0% {
+    transform: scale(0);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 0;
+  }
+}
+
+@keyframes float-glow {
+  0%,
+  100% {
+    box-shadow: 0 0 20px 0px rgba(0, 255, 255, 0.1);
+  }
+  50% {
+    box-shadow: 0 0 30px 4px rgba(0, 255, 255, 0.15);
+  }
+}
+
+.photo-placeholder {
+  position: absolute;
+  border-radius: 0.5rem;
+  background-color: #1a1a1a;
+  background-image: radial-gradient(
+      circle at 1px 1px,
+      rgba(255, 255, 255, 0.1) 1px,
+      transparent 0
+    ),
+    radial-gradient(
+      circle at 4px 4px,
+      rgba(255, 255, 255, 0.1) 1px,
+      transparent 0
+    );
+  background-size: 5px 5px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.photo-placeholder::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(45deg, var(--cyan), var(--lime));
+  opacity: 0;
+  animation: subtle-reveal 15s ease-in-out infinite;
+  animation-delay: var(--reveal-delay, 0s);
+}
+
+@keyframes subtle-reveal {
+  0%,
+  100% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 0.4;
+  }
+}
+
+@keyframes fade-in {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.3s ease-out;
+}
+
+/* Scrollbar styles */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--dark-bg);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--cyan);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #00dddd;
+}
+
+/* Hide scrollbar for webkit */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+.scrollbar-hide {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+/* Custom Sonner toast styles */
+[data-sonner-toaster] {
+  --normal-bg: rgba(20, 20, 20, 0.95);
+  --normal-border: var(--cyan);
+  --normal-text: var(--cyan);
+  --success-bg: rgba(20, 20, 20, 0.95);
+  --success-border: var(--lime);
+  --success-text: var(--lime);
+  --error-bg: rgba(20, 20, 20, 0.95);
+  --error-border: var(--lime);
+  --error-text: var(--lime);
+  --warning-bg: rgba(20, 20, 20, 0.95);
+  --warning-border: #ffaa00;
+  --warning-text: #ffaa00;
+  --info-bg: rgba(20, 20, 20, 0.95);
+  --info-border: var(--cyan);
+  --info-text: var(--cyan);
+}
+
+[data-sonner-toast] {
+  background: var(--normal-bg) !important;
+  border: 2px solid var(--normal-border) !important;
+  color: var(--normal-text) !important;
+  backdrop-filter: blur(10px) !important;
+  font-family: var(--font-family-mono) !important;
+  box-shadow: 0 0 15px 0px rgba(0, 255, 255, 0.3) !important;
+}
+
+[data-sonner-toast][data-type="success"] {
+  border-color: var(--success-border) !important;
+  color: var(--success-text) !important;
+  box-shadow: 0 0 15px 0px rgba(57, 255, 20, 0.3) !important;
+}
+
+[data-sonner-toast][data-type="error"] {
+  border-color: var(--error-border) !important;
+  color: var(--error-text) !important;
+  box-shadow: 0 0 15px 0px rgba(57, 255, 20, 0.3) !important;
+}
+
+[data-sonner-toast][data-type="warning"] {
+  border-color: var(--warning-border) !important;
+  color: var(--warning-text) !important;
+  box-shadow: 0 0 15px 0px rgba(255, 170, 0, 0.3) !important;
+}
+
+[data-sonner-toast][data-type="info"] {
+  border-color: var(--info-border) !important;
+  color: var(--info-text) !important;
+  box-shadow: 0 0 15px 0px rgba(0, 255, 255, 0.3) !important;
+}
+
+[data-sonner-toast] [data-title] {
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+[data-sonner-toast] [data-description] {
+  opacity: 0.9;
+}
+
+[data-sonner-toast] [data-close-button] {
+  color: var(--cyan);
+  opacity: 0.7;
+}
+
+[data-sonner-toast] [data-close-button]:hover {
+  opacity: 1;
+}
+
