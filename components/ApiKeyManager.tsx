@@ -8,7 +8,7 @@ import {
 import { showError, showSuccess } from "../utils/toast";
 
 interface ApiKeyManagerProps {
-  onApiKeySet: (apiKey: string) => void;
+  onApiKeySet: (key: string) => void;
   onClose?: () => void;
 }
 
@@ -46,7 +46,6 @@ const ApiKeyManager: React.FC<ApiKeyManagerProps> = ({
       onApiKeySet(trimmedKey);
       setError(null);
       showSuccess("API key saved successfully!");
-      // Close modal after successful save
       if (onClose) {
         onClose();
       }
@@ -65,13 +64,13 @@ const ApiKeyManager: React.FC<ApiKeyManagerProps> = ({
   };
 
   return (
-    <div className="space-y-5 pb-2">
-      {/* Privacy & Security - Simplified */}
-      <div className="glass border border-lime/50 bg-lime/5 p-4">
-        <div className="flex items-start gap-3">
+    <div className="space-y-3">
+      {/* Privacy Info - Compact */}
+      <div className="glass border border-cyan/30 p-3">
+        <div className="flex items-start gap-2">
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            className="h-5 w-5 text-lime flex-shrink-0 mt-0.5"
+            className="h-4 w-4 text-lime flex-shrink-0 mt-0.5"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
@@ -83,46 +82,39 @@ const ApiKeyManager: React.FC<ApiKeyManagerProps> = ({
               d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
             />
           </svg>
-          <div className="flex-1 min-w-0">
-            <h4 className="text-lime text-sm font-bold uppercase mb-2">
-              Privacy & Security
-            </h4>
-            <p className="text-cyan/70 text-xs leading-relaxed">
-              Your API key is stored in browser{" "}
-              <code className="bg-dark-bg/50 px-1 py-0.5 rounded text-cyan font-mono">
-                localStorage
-              </code>{" "}
-              and never sent to our servers. API calls go directly from your
-              browser to Google.
-            </p>
-          </div>
+          <p className="text-cyan/70 text-xs leading-relaxed">
+            Your API key is stored in browser localStorage and never sent to our
+            servers. API calls go directly from your browser to Google.
+          </p>
         </div>
       </div>
 
-      {/* Status Display */}
+      {/* Status - Compact */}
       {storedKeyExists && getApiKey() && (
-        <div className="glass border border-cyan/30 p-4">
-          <div className="flex items-center gap-2 flex-wrap">
-            <p className="text-cyan text-sm font-bold uppercase">
-              API Key Configured
-            </p>
-            <span className="text-xs bg-lime/20 text-lime px-2 py-0.5 rounded border border-lime/30">
-              Stored Locally
+        <div className="glass border border-cyan/30 p-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <span className="text-cyan text-xs font-bold uppercase">
+                API Key Configured
+              </span>
+              <span className="text-xs bg-lime/20 text-lime px-2 py-0.5 rounded border border-lime/30">
+                Stored Locally
+              </span>
+            </div>
+            <span className="text-cyan/60 text-xs font-mono">
+              {getApiKey()?.substring(0, 8)}...
+              {getApiKey()?.substring((getApiKey()?.length || 0) - 4)}
             </span>
           </div>
-          <p className="text-cyan/60 text-xs mt-2 font-mono break-all">
-            {getApiKey()?.substring(0, 8)}...
-            {getApiKey()?.substring((getApiKey()?.length || 0) - 4)}
-          </p>
         </div>
       )}
 
-      {/* Input Section */}
-      <div className="glass border border-cyan/30 p-5 space-y-4">
+      {/* Input Section - Compact */}
+      <div className="glass border border-cyan/30 p-3 space-y-3">
         <div>
           <label
             htmlFor="apiKey"
-            className="block text-cyan/80 text-sm font-bold uppercase mb-2"
+            className="block text-cyan text-xs font-bold uppercase mb-1.5"
           >
             Gemini API Key
           </label>
@@ -135,7 +127,7 @@ const ApiKeyManager: React.FC<ApiKeyManagerProps> = ({
               setError(null);
             }}
             placeholder="Enter your API key"
-            className="w-full bg-white border border-cyan/30 text-dark-bg placeholder:text-gray-400 px-4 py-3 focus:outline-none focus:border-cyan focus:ring-2 focus:ring-cyan/20 font-mono text-sm"
+            className="w-full bg-white border border-cyan/30 text-dark-bg placeholder:text-gray-400 px-3 py-2 focus:outline-none focus:border-cyan focus:ring-2 focus:ring-cyan/20 font-mono text-sm"
             onKeyDown={(e) => {
               if (e.key === "Enter") {
                 handleSave();
@@ -143,23 +135,21 @@ const ApiKeyManager: React.FC<ApiKeyManagerProps> = ({
             }}
             data-testid="api-key-input"
           />
-          <div className="min-h-[20px] mt-1">
-            {error && <p className="text-lime text-xs">{error}</p>}
-          </div>
+          {error && <p className="text-lime text-xs mt-1">{error}</p>}
         </div>
 
-        <div className="flex flex-col sm:flex-row gap-3 pt-2">
+        <div className="flex gap-2">
           <button
             onClick={handleSave}
-            className="flex-1 bg-cyan text-dark-bg font-bold py-3 px-4 uppercase text-sm transition duration-200 active:scale-[0.98] btn-dither min-h-[44px]"
+            className="flex-1 bg-cyan text-dark-bg font-bold py-2 px-4 uppercase text-xs transition duration-200 active:scale-[0.98] btn-dither"
             data-testid="api-key-save-button"
           >
-            {storedKeyExists ? "Update API Key" : "Save API Key"}
+            {storedKeyExists ? "Update" : "Save"}
           </button>
           {storedKeyExists && (
             <button
               onClick={handleRemove}
-              className="sm:w-auto bg-lime/20 border border-lime text-lime hover:bg-lime hover:text-dark-bg font-bold py-3 px-4 uppercase text-sm transition duration-200 active:scale-[0.98] btn-dither min-h-[44px]"
+              className="bg-lime/20 border border-lime text-lime hover:bg-lime hover:text-dark-bg font-bold py-2 px-4 uppercase text-xs transition duration-200 active:scale-[0.98] btn-dither"
               data-testid="api-key-remove-button"
             >
               Remove
@@ -168,16 +158,15 @@ const ApiKeyManager: React.FC<ApiKeyManagerProps> = ({
         </div>
       </div>
 
-      {/* Link Section */}
-      <div className="glass border border-cyan/30 p-4">
-        <p className="text-cyan/70 text-xs mb-2">Need an API key?</p>
+      {/* Link - Compact */}
+      <div className="glass border border-cyan/30 p-2">
         <a
           href="https://aistudio.google.com/app/apikey"
           target="_blank"
           rel="noopener noreferrer"
-          className="text-lime hover:underline text-xs font-mono break-all inline-block"
+          className="text-lime hover:underline text-xs font-mono"
         >
-          Get your free API key from Google AI Studio →
+          Need an API key? Get one from Google AI Studio →
         </a>
       </div>
     </div>

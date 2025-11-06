@@ -23,13 +23,30 @@ const Modal: React.FC<ModalProps> = ({
   useEffect(() => {
     if (isOpen) {
       // Prevent body scroll when modal is open
-      document.body.style.overflow = "hidden";
+      // Use position: fixed approach for better mobile support
+      const scrollY = window.scrollY;
+      document.body.style.position = 'fixed';
+      document.body.style.top = `-${scrollY}px`;
+      document.body.style.width = '100%';
+      document.body.style.overflow = 'hidden';
     } else {
-      document.body.style.overflow = "unset";
+      // Restore scroll position
+      const scrollY = document.body.style.top;
+      document.body.style.position = '';
+      document.body.style.top = '';
+      document.body.style.width = '';
+      document.body.style.overflow = '';
+      if (scrollY) {
+        window.scrollTo(0, parseInt(scrollY || '0') * -1);
+      }
     }
 
     return () => {
-      document.body.style.overflow = "unset";
+      // Cleanup
+      document.body.style.position = '';
+      document.body.style.top = '';
+      document.body.style.width = '';
+      document.body.style.overflow = '';
     };
   }, [isOpen]);
 
@@ -48,7 +65,7 @@ const Modal: React.FC<ModalProps> = ({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4"
+      className="fixed inset-0 z-50 flex items-center justify-center p-2 md:p-4"
       onClick={(e) => {
         // Close modal when clicking backdrop
         if (e.target === e.currentTarget) {
@@ -57,18 +74,18 @@ const Modal: React.FC<ModalProps> = ({
       }}
     >
       {/* Backdrop */}
-      <div className="absolute inset-0 bg-dark-bg/80 backdrop-blur-sm animate-fade-in" />
+      <div className="absolute inset-0 bg-dark-bg/80 backdrop-blur-sm animate-fade-in pointer-events-none" />
 
       {/* Modal Content */}
       <div
-        className={`relative z-10 glass border-2 border-cyan/50 shadow-glow-cyan w-full ${sizeClasses[size]} h-[90vh] flex flex-col animate-fade-in`}
+        className={`relative z-10 glass border-2 border-cyan/50 shadow-glow-cyan w-full ${sizeClasses[size]} h-[95vh] md:h-[90vh] flex flex-col animate-fade-in`}
         onClick={(e) => e.stopPropagation()}
         data-testid={title === "Settings" ? "settings-modal" : undefined}
       >
         {/* Header - Sticky */}
         {title && (
-          <div className="flex-shrink-0 glass border-b border-cyan/30 p-4 flex items-center justify-between sticky top-0 z-10 bg-dark-bg/95 backdrop-blur-sm">
-            <h2 className="text-cyan text-2xl font-bold uppercase tracking-wider">
+          <div className="flex-shrink-0 glass border-b border-cyan/30 p-2 md:p-4 flex items-center justify-between sticky top-0 z-10 bg-dark-bg/95 backdrop-blur-sm">
+            <h2 className="text-cyan text-xl md:text-2xl font-bold uppercase tracking-wider">
               {title}
             </h2>
             <button
@@ -95,7 +112,10 @@ const Modal: React.FC<ModalProps> = ({
         )}
 
         {/* Content - Scrollable */}
-        <div className="flex-1 overflow-hidden flex flex-col min-h-0">
+        <div 
+          className="flex-1 overflow-hidden flex flex-col min-h-0" 
+          style={{ WebkitOverflowScrolling: 'touch' as const }}
+        >
           {children}
         </div>
       </div>

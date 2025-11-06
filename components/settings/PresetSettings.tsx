@@ -517,12 +517,12 @@ const PresetSettings: React.FC<PresetSettingsProps> = ({ initialPresetId }) => {
   const editingPresetInfo = editingPreset ? getPresetInfo(editingPreset) : null;
 
   return (
-    <div className="space-y-6 min-h-[400px]">
+    <div className="space-y-3 md:space-y-6 min-h-[400px]">
       <div>
-        <h3 className="text-cyan text-xl font-bold uppercase mb-2">
+        <h3 className="text-cyan text-lg md:text-xl font-bold uppercase mb-1.5 md:mb-2">
           Preset Management
         </h3>
-        <p className="text-cyan/70 text-sm mb-4">
+        <p className="text-cyan/70 text-xs md:text-sm mb-3 md:mb-4">
           Customize default preset prompts or create your own custom presets.
           All changes are saved locally in your browser and persist across
           sessions.
@@ -530,7 +530,7 @@ const PresetSettings: React.FC<PresetSettingsProps> = ({ initialPresetId }) => {
       </div>
 
       {/* Use consistent container height to prevent layout shifts */}
-      <div className="relative min-h-[500px]">
+      <div className="relative min-h-[400px] md:min-h-[500px]">
         <div
           className={`transition-opacity duration-200 ${
             editingPresetInfo
@@ -539,7 +539,7 @@ const PresetSettings: React.FC<PresetSettingsProps> = ({ initialPresetId }) => {
           }`}
         >
           {editingPresetInfo && (
-            <div className="glass border-2 border-cyan/50 p-6">
+            <div className="glass border-2 border-cyan/50 p-3 md:p-6">
               <h4 className="text-cyan text-lg font-bold uppercase mb-2">
                 {editingPresetInfo.isCustom
                   ? "Edit Custom Preset"
@@ -759,6 +759,7 @@ const PresetSettings: React.FC<PresetSettingsProps> = ({ initialPresetId }) => {
                                   ? "bg-lime/20 border-lime text-lime hover:bg-lime hover:text-dark-bg"
                                   : "bg-cyan/20 border-cyan text-cyan hover:bg-cyan hover:text-dark-bg"
                               }`}
+                              data-testid={`edit-preset-button-${preset.id}`}
                             >
                               Edit
                             </button>

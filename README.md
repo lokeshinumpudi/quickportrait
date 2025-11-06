@@ -17,41 +17,80 @@ Professional AI-powered portrait editing tool. Transform your photos with powerf
 
 **Prerequisites:** Node.js 18+ or Bun
 
-### Using Bun (Recommended)
+### Quick Start
 
-1. Install dependencies:
+1. **Clone the repository:**
 
    ```bash
+   git clone https://github.com/yourusername/quick-portrait.git
+   cd quick-portrait
+   ```
+
+2. **Install dependencies:**
+
+   ```bash
+   # Using Bun (Recommended)
    bun install
-   ```
 
-2. (Optional) Set `GEMINI_API_KEY` in `.env.local` for development:
-
-   ```bash
-   GEMINI_API_KEY=your_api_key_here
-   ```
-
-   Note: If not set, users will be prompted to enter their own API key in the app.
-
-3. Run the app:
-   ```bash
-   bun run dev
-   ```
-
-### Using npm
-
-1. Install dependencies:
-
-   ```bash
+   # Or using npm
    npm install
    ```
 
-2. (Optional) Set `GEMINI_API_KEY` in `.env.local` for development
+3. **Run the development server:**
 
-3. Run the app:
    ```bash
+   # Using Bun
+   bun run dev
+
+   # Or using npm
    npm run dev
    ```
+
+   The app will be available at `http://localhost:3000`
+
+   **Note:** Users will be prompted to enter their own Gemini API key in the app. The API key is stored locally in the browser and never sent to any servers.
+
+### Development Scripts
+
+```bash
+# Development
+bun run dev              # Start dev server
+bun run build           # Build for production
+bun run preview         # Preview production build
+
+# Code Quality
+bun run type-check      # Run TypeScript type checking
+bun run lint            # Run linting (TypeScript check)
+
+# Testing
+bun run test            # Run all Playwright tests
+bun run test:ui         # Run tests with Playwright UI
+bun run test:report     # View test report
+bun run test:manual     # Run tests with manually started server
+
+# Utilities
+bun run clean           # Clean build artifacts
+```
+
+### Local Configuration
+
+#### File Size Limits
+
+The app has a configurable file size limit (default: 10MB):
+
+- Adjustable in Settings → General Settings
+- Range: 1MB - 100MB
+- Stored in browser `localStorage`
+
+#### Browser Storage
+
+The app uses browser `localStorage` for:
+
+- API keys (`gemini_api_key`)
+- Custom presets (`custom_presets`)
+- File size limits (`max_file_size_mb`)
+
+All data stays in your browser - never sent to any servers.
 
 ## Get Your Gemini API Key
 
@@ -79,9 +118,7 @@ This app can be deployed to any static hosting service. No backend required!
 - Output Directory: `dist`
 - Install Command: `bun install` (or `npm install`)
 
-**Environment Variables (Optional):**
-
-- `GEMINI_API_KEY` - Only needed if you want to provide a default API key. Users can still use their own.
+**Note:** No environment variables needed. Users provide their own Gemini API keys in the app.
 
 ### Deploy to Netlify
 
@@ -95,9 +132,7 @@ This app can be deployed to any static hosting service. No backend required!
 - Build command: `bun run build` (or `npm run build`)
 - Publish directory: `dist`
 
-**Environment Variables (Optional):**
-
-- `GEMINI_API_KEY` - Only needed if you want to provide a default API key. Users can still use their own.
+**Note:** No environment variables needed. Users provide their own Gemini API keys in the app.
 
 ### Deploy to Other Platforms
 
@@ -120,25 +155,71 @@ For other static hosting services (GitHub Pages, Cloudflare Pages, etc.):
 3. **Edit** - The app uses Google's Gemini API to generate edited images
 4. **Download** - Save your edited images
 
-## 🔒 Privacy & Security
+## 🔒 Privacy-First Architecture
 
 **100% Client-Side Privacy Guaranteed**
 
-Quick Portrait is designed with privacy and security as core principles:
+Quick Portrait is built with privacy and security as foundational principles. The entire architecture is designed to ensure your data never leaves your device.
 
-### API Key Storage
+### Architecture Overview
+
+```
+┌─────────────────────────────────────────────────────────┐
+│                    Your Browser                          │
+│  ┌───────────────────────────────────────────────────┐   │
+│  │         Quick Portrait App (Client-Side)         │   │
+│  │  • Image Processing (local)                      │   │
+│  │  • API Key Storage (localStorage)                 │   │
+│  │  • Preset Storage (localStorage)                  │   │
+│  └───────────────────────────────────────────────────┘   │
+│                          │                                │
+│                          │ Direct API Calls               │
+│                          ▼                                │
+│  ┌───────────────────────────────────────────────────┐   │
+│  │      Google Gemini API (External Service)        │   │
+│  │  • Image Generation                                │   │
+│  │  • Prompt Processing                               │   │
+│  └───────────────────────────────────────────────────┘   │
+└─────────────────────────────────────────────────────────┘
+
+❌ No Backend Servers
+❌ No Data Collection
+❌ No Analytics
+❌ No Tracking
+```
+
+### Privacy Guarantees
+
+#### 🔐 API Key Storage
 
 - **Browser localStorage Only**: Your API key is stored exclusively in your browser's `localStorage`
 - **Never Transmitted**: Your API key never leaves your device and is never sent to our servers
 - **Zero Server Access**: We have absolutely zero access to your API keys, images, or any user data
 - **User Control**: You can view, update, or delete your API key anytime via browser developer tools or the app settings
+- **Verifiable**: You can inspect browser DevTools to verify no data is sent to external servers (except Google's Gemini API)
+
+#### 📸 Image Processing
+
+- **Client-Side Only**: Images are processed entirely in your browser
+- **No Upload to Our Servers**: Images never leave your device except for direct API calls to Google Gemini
+- **Direct API Connection**: API calls go directly from your browser to Google's Gemini API servers
+- **No Storage**: We don't store, cache, or log any images
+
+#### 💾 Data Storage
+
+- **Local Only**: All data (API keys, presets, settings) stored in browser `localStorage`
+- **No Cloud Sync**: No cloud storage, no data synchronization
+- **User Owned**: You have complete control over your data
+- **Deletable**: Clear browser data to remove everything instantly
 
 ### Data Flow
 
-- **Direct Connection**: API calls go directly from your browser to Google's Gemini API servers
-- **No Backend**: This app has no backend servers - it's 100% client-side
-- **No Data Collection**: We don't collect, store, or transmit any user data, images, or API keys
-- **Privacy by Design**: Your privacy is guaranteed by the application architecture itself
+1. **Image Upload**: Image stays in browser memory (never uploaded to our servers)
+2. **API Call**: Direct connection from your browser → Google Gemini API
+3. **Response**: Generated image returned directly to your browser
+4. **Storage**: Results stored only in browser memory/localStorage
+
+**No intermediaries. No data collection. No tracking.**
 
 ### What We Don't Have Access To
 
@@ -147,6 +228,16 @@ Quick Portrait is designed with privacy and security as core principles:
 - ❌ Your edited images
 - ❌ Your prompts or custom presets
 - ❌ Any personal information
+- ❌ Usage analytics
+- ❌ Error logs (errors are logged only in your browser console)
+
+### Privacy by Design Principles
+
+1. **Zero Backend**: No server-side code means no server-side data collection
+2. **Direct API Calls**: Your browser talks directly to Google's API
+3. **Local Storage Only**: All data stays in your browser
+4. **Open Source**: You can audit the code to verify privacy claims
+5. **No Dependencies on Analytics**: No tracking libraries or analytics services
 
 **Your data stays in your browser. Period.**
 
@@ -160,17 +251,54 @@ Quick Portrait is designed with privacy and security as core principles:
 
 ## Development
 
-The app is built with:
+### Tech Stack
 
-- React 19
-- TypeScript
-- Vite
-- Tailwind CSS
-- Google Gemini API
+- **Frontend Framework**: React 19.2.0
+- **Language**: TypeScript 5.8.2
+- **Build Tool**: Vite 6.2.0
+- **Styling**: Tailwind CSS (via CDN)
+- **API Client**: @google/genai (Google Gemini API)
+- **Testing**: Playwright 1.56.1
+- **Package Manager**: Bun (or npm)
+- **Code Quality**: Husky + lint-staged
+
+### Project Structure
+
+```
+quick-portrait/
+├── components/          # React components
+│   ├── settings/       # Settings-related components
+│   └── *.tsx          # Feature components
+├── services/          # API service layers
+├── utils/             # Utility functions
+├── tests/             # Playwright E2E tests
+│   └── helpers.ts     # Test helper functions
+├── types.ts           # TypeScript type definitions
+├── constants.ts       # App constants and configuration
+├── App.tsx            # Main application component
+└── index.tsx          # Entry point
+```
+
+### Code Quality
+
+The project includes automated code quality checks:
+
+- **Pre-commit Hook**: Type-checks staged TypeScript files
+- **Pre-push Hook**: Runs full type-check + all tests before allowing push
+- **TypeScript**: Strict type checking enabled
+- **Testing**: Comprehensive E2E tests with Playwright
+
+### Contributing
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Make your changes
+4. Ensure tests pass (`bun run test`)
+5. Ensure type checking passes (`bun run type-check`)
+6. Commit your changes (git hooks will run automatically)
+7. Push to your branch (`git push origin feature/amazing-feature`)
+8. Open a Pull Request
 
 ## License
 
 MIT
-// Git hooks configured in package.json
-
-Git hooks configured in package.json

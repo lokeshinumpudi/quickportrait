@@ -42,7 +42,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
         <div className="w-full md:w-56 flex-shrink-0 border-b md:border-b-0 bg-dark-bg/50 md:bg-transparent relative md:border-r md:border-cyan/30">
           {/* Vertical border extends full height */}
           <div className="absolute top-0 bottom-0 right-0 w-px bg-cyan/30 md:hidden"></div>
-          <nav className="flex md:flex-col gap-2 overflow-x-auto md:overflow-x-visible scrollbar-hide p-4 md:p-4 md:sticky md:top-0 relative z-10">
+          <nav className="flex md:flex-col gap-2 overflow-x-auto md:overflow-x-visible scrollbar-hide p-2 md:p-4 md:sticky md:top-0 relative z-10">
             {tabs.map((tab) => (
               <button
                 key={tab.id}
@@ -74,8 +74,14 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
         </div>
 
         {/* Content Area - Scrollable */}
-        <div className="flex-1 overflow-y-auto scrollbar-hide min-h-0">
-          <div className="animate-fade-in p-6">{children(activeTab)}</div>
+        <div 
+          className="flex-1 overflow-y-auto scrollbar-hide min-h-0" 
+          style={{ 
+            WebkitOverflowScrolling: 'touch' as const, 
+            touchAction: 'pan-y' as const 
+          }}
+        >
+          <div className="animate-fade-in p-3 md:p-6">{children(activeTab)}</div>
         </div>
       </div>
 

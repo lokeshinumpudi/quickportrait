@@ -45,12 +45,12 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
   const triggerFileInput = () => document.getElementById("fileInput")?.click();
 
   return (
-    <div className="glass p-6 border-2 border-cyan/20">
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="text-2xl font-bold text-cyan uppercase">
+    <div className="glass p-4 border-2 border-cyan/20">
+      <div className="flex items-center justify-between mb-3">
+        <h2 className="text-lg font-bold text-cyan uppercase">
           Upload Image
         </h2>
-        <span className="text-cyan/60 text-xs bg-dark-bg/50 px-2 py-1 rounded border border-cyan/20">
+        <span className="text-cyan/60 text-xs bg-dark-bg/50 px-2 py-0.5 rounded border border-cyan/20">
           Max {getMaxFileSizeMB()}MB
         </span>
       </div>
@@ -63,9 +63,9 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
         data-testid="file-input"
       />
       {inputImage ? (
-        <div className="flex items-center space-x-4">
+        <div className="flex items-center space-x-3">
           <div
-            className="relative w-24 h-24 flex-shrink-0 cursor-pointer group"
+            className="relative w-20 h-20 flex-shrink-0 cursor-pointer group"
             onClick={() => setIsModalOpen(true)}
             role="button"
             tabIndex={0}
@@ -85,7 +85,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
             <div className="absolute inset-0 bg-dark-bg/0 group-hover:bg-dark-bg/20 transition-colors flex items-center justify-center">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                className="h-6 w-6 text-cyan opacity-0 group-hover:opacity-100 transition-opacity"
+                className="h-5 w-5 text-cyan opacity-0 group-hover:opacity-100 transition-opacity"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -99,15 +99,15 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
               </svg>
             </div>
           </div>
-          <div className="flex-grow">
-            <p className="text-cyan font-medium truncate">
+          <div className="flex-grow min-w-0">
+            <p className="text-cyan font-medium text-sm truncate">
               {inputImage.file.name}
             </p>
-            <p className="text-cyan/70 text-sm">Click thumbnail to view</p>
+            <p className="text-cyan/70 text-xs">Click thumbnail to view</p>
           </div>
           <button
             onClick={triggerFileInput}
-            className="bg-cyan/20 border border-cyan text-cyan hover:bg-cyan hover:text-dark-bg font-bold py-2 px-4 uppercase transition duration-200 active:scale-[0.98] btn-dither"
+            className="bg-cyan/20 border border-cyan text-cyan hover:bg-cyan hover:text-dark-bg font-bold py-1.5 px-3 uppercase text-xs transition duration-200 active:scale-[0.98] btn-dither whitespace-nowrap"
           >
             Change
           </button>
@@ -115,7 +115,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
       ) : (
         <button
           onClick={triggerFileInput}
-          className="w-full bg-lime/80 text-dark-bg hover:bg-lime text-xl font-bold py-3 px-4 uppercase transition duration-200 ease-in-out active:scale-[0.98] btn-dither"
+          className="w-full bg-lime/80 text-dark-bg hover:bg-lime text-lg font-bold py-2.5 px-4 uppercase transition duration-200 ease-in-out active:scale-[0.98] btn-dither"
         >
           Select an Image from Disk
         </button>

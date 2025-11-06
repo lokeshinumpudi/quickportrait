@@ -25,7 +25,7 @@ export const isInvalidApiKeyError = (error: unknown): boolean => {
   // Check error structure from Gemini API
   if (geminiError.error) {
     const apiError = geminiError.error;
-    
+
     // Check status
     if (apiError.status === "INVALID_ARGUMENT") {
       // Check details for API_KEY_INVALID reason
@@ -35,7 +35,7 @@ export const isInvalidApiKeyError = (error: unknown): boolean => {
         );
         if (hasInvalidKeyReason) return true;
       }
-      
+
       // Check message
       if (
         apiError.message &&
@@ -92,3 +92,65 @@ export const getErrorMessage = (error: unknown): string => {
   return "An unknown error occurred. Please try again.";
 };
 
+/**
+ * Get a helpful error message with links for common errors
+ */
+export const getHelpfulErrorMessage = (
+  error: unknown
+): {
+  message: string;
+  helpLink?: string;
+  helpText?: string;
+} => {
+  if (isInvalidApiKeyError(error)) {
+    return {
+      message: "Your API key is invalid or expired.",
+      helpLink: "https://aistudio.google.com/app/apikey",
+      helpText: "Get a new API key from Google AI Studio",
+    };
+  }
+
+  const errorMessage = getErrorMessage(error);
+  const lowerMessage = errorMessage.toLowerCase();
+
+  // Rate limit errors
+  if (
+    lowerMessage.includes("rate limit") ||
+    lowerMessage.includes("quota") ||
+    lowerMessage.includes("429")
+  ) {
+    return {
+      message: "API rate limit reached. Please try again in a few moments.",
+      helpLink: "https://ai.google.dev/pricing",
+      helpText: "Check API quotas and pricing",
+    };
+  }
+
+  // Network errors
+  if (
+    lowerMessage.includes("network") ||
+    lowerMessage.includes("fetch") ||
+    lowerMessage.includes("connection")
+  ) {
+    return {
+      message: "Network error. Please check your internet connection.",
+    };
+  }
+
+  // Content policy errors
+  if (
+    lowerMessage.includes("safety") ||
+    lowerMessage.includes("content policy") ||
+    lowerMessage.includes("blocked")
+  ) {
+    return {
+      message:
+        "The prompt or image may violate content policies. Try a different prompt or image.",
+    };
+  }
+
+  // Default
+  return {
+    message: errorMessage,
+  };
+};

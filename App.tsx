@@ -14,9 +14,13 @@ import SettingsModal, { SettingsTab } from "./components/SettingsModal";
 import GeneralSettings from "./components/settings/GeneralSettings";
 import PresetSettings from "./components/settings/PresetSettings";
 import AdvancedSettings from "./components/settings/AdvancedSettings";
+import Onboarding from "./components/Onboarding";
 import { hasApiKey } from "./utils/apiKeyUtils";
+import { getHelpfulErrorMessage } from "./utils/errorUtils";
 import { showError, showSuccess } from "./utils/toast";
 import { validateFileSize } from "./utils/fileSizeUtils";
+import { trackEvent, AnalyticsEvents } from "./utils/analytics";
+import { hasCompletedOnboarding } from "./components/Onboarding";
 
 const App: React.FC = () => {
   const [inputImage, setInputImage] = useState<{
@@ -39,8 +43,13 @@ const App: React.FC = () => {
   const [presetToEdit, setPresetToEdit] = useState<string | undefined>(
     undefined
   );
+  const [showOnboarding, setShowOnboarding] = useState<boolean>(false);
 
   useEffect(() => {
+    // Check if user has completed onboarding
+    if (!hasCompletedOnboarding()) {
+      setShowOnboarding(true);
+    }
     // Load API key on mount if it exists
     if (hasApiKey()) {
       const storedKey = localStorage.getItem("gemini_api_key");
@@ -50,6 +59,8 @@ const App: React.FC = () => {
     }
     // Load available presets
     setAvailablePresets(getAllPresets());
+    // Track app load
+    trackEvent(AnalyticsEvents.APP_LOADED);
   }, []);
 
   // Reload presets when settings modal closes (in case presets were edited)
@@ -128,6 +139,10 @@ const App: React.FC = () => {
     setInputImage({ url, file });
     setOutputUrl(null);
     setView("editing"); // Reset to editing view on new image
+    trackEvent(AnalyticsEvents.IMAGE_UPLOADED, {
+      fileSize: file.size,
+      fileType: file.type,
+    });
   };
 
   const handleEditClick = useCallback(async () => {
@@ -162,16 +177,21 @@ const App: React.FC = () => {
       setView("results");
       showSuccess("Image generated successfully!");
       window.scrollTo({ top: 0, behavior: "smooth" });
+      trackEvent(AnalyticsEvents.EDIT_GENERATED, {
+        presetId: selectedPresetId,
+        hasCustomPrompt: promptText !== getPresetPrompt(selectedPresetId),
+      });
     } catch (err) {
       console.error(err);
-      const errorMessage =
-        err instanceof Error ? err.message : "An unknown error occurred.";
-      showError(errorMessage);
+      const helpfulError = getHelpfulErrorMessage(err);
+      showError(helpfulError.message);
+      trackEvent(AnalyticsEvents.ERROR_OCCURRED, {
+        errorType: err instanceof Error ? err.message : "unknown",
+      });
       // If API key error (invalid or missing), show API key modal
       if (
-        errorMessage.includes("API key") ||
-        errorMessage.includes("invalid") ||
-        errorMessage.toLowerCase().includes("api_key")
+        helpfulError.message.includes("API key") ||
+        helpfulError.message.includes("invalid")
       ) {
         setShowApiKeyModal(true);
       }
@@ -199,6 +219,7 @@ const App: React.FC = () => {
     link.click();
     document.body.removeChild(link);
     showSuccess("Image downloaded successfully!");
+    trackEvent(AnalyticsEvents.DOWNLOAD_CLICKED);
   };
 
   if (!inputImage) {
@@ -322,6 +343,7 @@ const App: React.FC = () => {
         onSettingsClick={() => {
           setSettingsDefaultTab("api-key");
           setShowApiKeyModal(true);
+          trackEvent(AnalyticsEvents.SETTINGS_OPENED);
         }}
       />
 
@@ -369,6 +391,7 @@ const App: React.FC = () => {
               <ActionsMenu
                 onRetry={handleEditClick}
                 onUseAgain={() => handleUseAsInput(outputUrl)}
+                resultImageUrl={outputUrl}
               />
             </div>
 
@@ -415,6 +438,7 @@ const App: React.FC = () => {
                     <ActionsMenu
                       onRetry={handleEditClick}
                       onUseAgain={() => handleUseAsInput(outputUrl)}
+                      resultImageUrl={outputUrl}
                     />
                   </div>
                   {/* Download Button */}
@@ -444,24 +468,27 @@ const App: React.FC = () => {
             </div>
           </div>
         ) : (
-          /* Editing View - Two Column Layout */
-          <div className="flex flex-col lg:flex-row gap-6 lg:gap-8 items-start">
-            {/* Left Column: Controls & Actions */}
-            <div className="flex flex-col space-y-4 w-full lg:w-1/2 lg:max-w-xl">
+          /* Editing View - Optimized Layout */
+          <div className="flex flex-col lg:flex-row gap-4 lg:gap-6 items-start">
+            {/* Left Column: Controls & Actions - More Compact */}
+            <div className="flex flex-col space-y-3 w-full lg:w-2/5 lg:max-w-md">
               {/* Upload Section */}
-              <div className="transition-all duration-300">
-                <ImageUploader
-                  inputImage={inputImage}
-                  onImageUpload={handleImageUpload}
-                />
-              </div>
+              <ImageUploader
+                inputImage={inputImage}
+                onImageUpload={handleImageUpload}
+              />
 
               {/* Editing View */}
               {view === "editing" && !isLoading && (
-                <div className="space-y-4 animate-fade-in">
+                <div className="space-y-3 animate-fade-in">
                   <EditingPanel
                     selectedPresetId={selectedPresetId}
-                    onPresetChange={setSelectedPresetId}
+                    onPresetChange={(presetId) => {
+                      setSelectedPresetId(presetId);
+                      trackEvent(AnalyticsEvents.PRESET_SELECTED, {
+                        presetId,
+                      });
+                    }}
                     customColor={customColor}
                     onColorChange={setCustomColor}
                     availablePresets={availablePresets}
@@ -477,55 +504,56 @@ const App: React.FC = () => {
                       setShowApiKeyModal(true);
                     }}
                   />
-                  <div className="glass p-4 border-2 border-cyan/30">
-                    <button
-                      onClick={handleEditClick}
-                      disabled={!inputImage || !promptText.trim()}
-                      className="w-full text-2xl bg-cyan text-dark-bg font-bold py-4 px-6 uppercase transition-all duration-200 ease-in-out transform disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.98] btn-dither shadow-glow-cyan hover:shadow-glow-cyan/50 disabled:hover:shadow-none"
-                      data-testid="generate-edit-button"
-                    >
-                      <span className="flex items-center justify-center gap-2">
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          className="h-6 w-6"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M13 10V3L4 14h7v7l9-11h-7z"
-                          />
-                        </svg>
-                        GENERATE EDIT
-                      </span>
-                    </button>
-                  </div>
+                  <button
+                    onClick={handleEditClick}
+                    disabled={!inputImage || !promptText.trim()}
+                    className="w-full text-xl bg-cyan text-dark-bg font-bold py-3 px-4 uppercase transition-all duration-200 ease-in-out transform disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.98] btn-dither shadow-glow-cyan hover:shadow-glow-cyan/50 disabled:hover:shadow-none"
+                    data-testid="generate-edit-button"
+                  >
+                    <span className="flex items-center justify-center gap-2">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-5 w-5"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M13 10V3L4 14h7v7l9-11h-7z"
+                        />
+                      </svg>
+                      Generate Edit
+                    </span>
+                  </button>
                 </div>
               )}
             </div>
 
-            {/* Right Column: Image Display */}
-            <div className="flex flex-col space-y-4 w-full lg:w-1/2 lg:sticky lg:top-4">
+            {/* Right Column: Image Display - More Prominent */}
+            <div className="flex flex-col w-full lg:w-3/5 lg:sticky lg:top-4">
               {/* Loading State */}
               {isLoading && (
-                <div className="glass border-2 border-cyan/30 p-12 min-h-[500px] flex flex-col items-center justify-center animate-fade-in" data-testid="loading-state">
-                  <div className="w-16 h-16 border-4 border-cyan/30 border-t-cyan rounded-full animate-spin"></div>
-                  <p className="mt-8 text-2xl uppercase text-cyan font-bold">
+                <div
+                  className="glass border-2 border-cyan/30 p-8 min-h-[400px] flex flex-col items-center justify-center animate-fade-in"
+                  data-testid="loading-state"
+                >
+                  <div className="w-12 h-12 border-4 border-cyan/30 border-t-cyan rounded-full animate-spin"></div>
+                  <p className="mt-6 text-xl uppercase text-cyan font-bold">
                     Generating...
                   </p>
                 </div>
               )}
 
-              {/* Empty State */}
+              {/* Empty State - More Compact */}
               {!isLoading && !outputUrl && (
-                <div className="glass border-2 border-dashed border-cyan/30 p-12 min-h-[500px] flex flex-col items-center justify-center text-center animate-fade-in">
-                  <div className="mb-6 opacity-50">
+                <div className="glass border-2 border-dashed border-cyan/30 p-8 min-h-[400px] flex flex-col items-center justify-center text-center animate-fade-in">
+                  <div className="mb-4 opacity-50">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
-                      className="h-24 w-24 text-cyan/30"
+                      className="h-16 w-16 text-cyan/30"
                       fill="none"
                       viewBox="0 0 24 24"
                       stroke="currentColor"
@@ -538,12 +566,11 @@ const App: React.FC = () => {
                       />
                     </svg>
                   </div>
-                  <p className="text-cyan/80 text-xl uppercase font-bold mb-2">
+                  <p className="text-cyan/80 text-lg uppercase font-bold mb-1.5">
                     Ready to Transform
                   </p>
-                  <p className="text-cyan/60 text-sm max-w-xs">
-                    Your edited image will appear here after generation. Choose
-                    a preset or write a custom prompt to get started.
+                  <p className="text-cyan/60 text-xs max-w-xs">
+                    Your edited image will appear here after generation.
                   </p>
                 </div>
               )}
@@ -551,6 +578,12 @@ const App: React.FC = () => {
           </div>
         )}
       </main>
+
+      {/* Onboarding Modal */}
+      <Onboarding
+        isOpen={showOnboarding}
+        onClose={() => setShowOnboarding(false)}
+      />
     </div>
   );
 };
