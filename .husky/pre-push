@@ -1,6 +1,3 @@
-#!/usr/bin/env sh
-. "$(dirname -- "$0")/_/husky.sh"
-
 echo "🔍 Running type check..."
 bun run type-check || {
   echo "❌ Type check failed. Please fix the errors before pushing."
@@ -14,4 +11,3 @@ bun run test || {
 }
 
 echo "✅ All checks passed! Pushing..."
-
